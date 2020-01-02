@@ -230,6 +230,81 @@ class SVMClassifier:
         p.finish()
         return precisionDict
 
+
+    def hog_ltp_Predict(self, imagePath, meanPcaDictPath=None, selectVecDictPath=None, display=True):
+        currentDir = os.path.dirname(os.path.abspath(__name__))
+        imageAbsPath = os.path.join(currentDir, imagePath)
+        imageLtpVector = methods.Ltp(imageAbsPath).histogramVector
+        imageHogVector = methods.Hog(imageAbsPath).histogramVector
+        imageVector = np.append(imageHogVector, imageLtpVector)
+        imageVector = np.float32([imageVector])                                 # convert image nparray to type float32
+        meanPcaDict = {}
+        selectVecDict = {}
+        if meanPcaDictPath is not None and selectVecDictPath is not None:
+            meanPcaDictPath = os.path.join(currentDir, meanPcaDictPath)
+            selectVecDictPath = os.path.join(currentDir, selectVecDictPath)
+            with open(meanPcaDictPath, 'rb') as f:
+                meanPcaDict = pickle.load(f)
+            with open(selectVecDictPath, 'rb') as f:
+                selectVecDict = pickle.load(f)
+        for root, dirlist, files in os.walk(self.svmModelsPath):
+            for file in files:
+                emotions = file[:-7]
+                emotions = emotions.split('_')                          # emotions = ['anger', 'happy']
+                svmModelPath = os.path.join(root, file)
+                svmModel = cv2.ml.SVM_load(svmModelPath)
+                adjustImageLtpVector = imageVector
+                if len(meanPcaDict) != 0 and len(selectVecDict) != 0:
+                    meanPca = meanPcaDict[file]
+                    selectVec = selectVecDict[file].astype('float32')
+                    adjustImageLtpVector = imageVector - meanPca
+                    adjustImageLtpVector = adjustImageLtpVector * selectVec
+                (_, predictVal) = svmModel.predict(adjustImageLtpVector)
+                if predictVal == 1:
+                    self.__emotionsDict[emotions[0]] += 1
+                else:
+                    self.__emotionsDict[emotions[1]] += 1
+        emotionPrediction = ''
+        for key, value in self.__emotionsDict.items():
+            if value == 5:
+                emotionPrediction = key
+        if display:
+            print(imagePath)
+            print(self.__emotionsDict)
+            print(emotionPrediction)
+        self.reset_emotionsDict()
+        return emotionPrediction
+
+
+    def test_Hog_Ltp_precision(self, testImageBase, meanPcaDictPath=None, selectVecDictPath=None, display=False):
+        precisionDict = {}
+        currentDir = os.path.dirname(os.path.abspath(__name__))
+        testImageAbsBase = os.path.join(currentDir, testImageBase)
+        p = progressbar.ProgressBar()
+        p.start()
+        nbTestPhotos = 0
+        fileCount = 0
+        for root, dirList, files in os.walk(testImageAbsBase):
+            nbTestPhotos += len(files)
+        for root, dirList, files in os.walk(testImageAbsBase):
+            testNumber = len(files)
+            correctCount = 0
+            for file in files:
+                testImageAbsPath = os.path.join(root, file)
+                emotionPrediction = self.hog_ltp_Predict(testImageAbsPath, meanPcaDictPath, selectVecDictPath, display)
+                emotionLabel = os.path.basename(root)
+                fileCount += 1
+                if emotionPrediction == emotionLabel:
+                    correctCount += 1
+                p.update(fileCount * 100 / nbTestPhotos)
+            if testNumber != 0:
+                precision = round(correctCount / testNumber * 100, 3)
+                print('Emotion ' + emotionLabel + ' precision is ', precision, '%')
+                precisionDict[emotionLabel] = precision
+        p.finish()
+        return precisionDict
+
+
 class PCA:
     kDimention = 0
     normalizationDict = {}
