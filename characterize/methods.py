@@ -192,7 +192,7 @@ class Ltp:
 
 
 class Hog:
-    blocks_size = {
+    cell_size = {
         'EYE LEFT': (1,1),
         'EYE RIGHT': (1,1),
         'EYEBROW LEFT': (5,1),
@@ -205,4 +205,29 @@ class Hog:
     histogramVector = np.array([])
 
     def __init__(self, imagePath):
-        self.
+        self.faceROIs = face_rois.Face_ROIs(imagePath, method='hog')
+        self.Hog_Histogram()
+
+    def One_ROI_Hog_Histogram(self, ROI, keyBlock):
+        winSize = (ROI.shape[1], ROI.shape[0])
+        blockSize = (self.cell_size[keyBlock][0] * 2, self.cell_size[keyBlock][1] * 2)
+        blockStride = self.cell_size[keyBlock]
+        cellSize = self.cell_size[keyBlock]
+
+        # creates a HOG descriptor
+        hog = cv2.HOGDescriptor(winSize, blockSize, blockStride, cellSize, 9)
+
+        # computes histogram of ROI
+        hist = hog.compute(ROI)
+
+        # transform matrix to a vector
+        hist = hist.ravel()
+        return hist
+
+    def Hog_Histogram(self):
+        if len(self.faceROIs.resizedROIs) == 0:
+            print("image resized ROI dictionary is empty, fail to generate histogram")
+            return
+        for keyBlock, ROI in self.faceROIs.resizedROIs.items():
+            hist = self.One_ROI_Hog_Histogram(ROI, keyBlock)
+            self.histogramVector = np.concatenate((self.histogramVector, hist))

@@ -47,3 +47,18 @@ class Generator:
                     with open(vectorFilePath, 'a') as f:
                         np.savetxt(f, [histogram], fmt='%.5f', delimiter=',')
                         print(file, " vector saved in ", vectorFilePath)
+
+    def readHog2write(self):
+        for root, dirlist, files in os.walk(self.database):
+            emotion = os.path.basename(root)  # name of directory, which is emotion
+            vectorFilePath = os.path.join(self.targetPath, emotion + '.txt')
+            for file in files:
+                imagePath = os.path.join(root, file)  # image absolute path
+                histogram = methods.Hog(imagePath).histogramVector
+                print(file)
+                if len(histogram) == 0:
+                    print("length of vector is 0, probably no face detected in this image:  ", file)
+                    continue
+                with open(vectorFilePath, 'a') as f:
+                    np.savetxt(f, [histogram], fmt='%.5f', delimiter=',')
+                    print(file, " vector saved in ", vectorFilePath)
