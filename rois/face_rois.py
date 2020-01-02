@@ -18,10 +18,27 @@ class Face_ROIs:
                             'INTER EYEBROW' : (30, 30),
                             'MOUTH' : (80, 60)
                             },
+                    'ltp': {
+                        'EYE LEFT': (36, 24),
+                        'EYE RIGHT': (36, 24),
+                        'EYEBROW LEFT': (54, 18),
+                        'EYEBROW RIGHT': (54, 18),
+                        'INTER EYEBROW': (24, 24),
+                        'MOUTH': (54, 36)
+                    },
+                    'hog' : {
+                        'EYE LEFT': (32, 16),
+                        'EYE RIGHT': (32, 16),
+                        'EYEBROW LEFT': (120, 24),
+                        'EYEBROW RIGHT': (120, 24),
+                        'INTER EYEBROW': (16, 16),
+                        'MOUTH': (120, 64)
+                    }
     }
     __PREDICTOR_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../shape predictor/shape_predictor_68_face_landmarks.dat')
 
     def __init__(self, imagePath, method='lbp'):
+        self.method = method
         self.image = cv2.imread(imagePath)
         self.grayImage = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         FaceDetector = dlib.get_frontal_face_detector()                     # initialize facial detector
