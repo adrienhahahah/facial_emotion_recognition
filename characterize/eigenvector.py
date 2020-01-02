@@ -22,9 +22,24 @@ class Generator:
             emotion = os.path.basename(root)  # name of directory, which is emotion
             vectorFilePath = os.path.join(self.targetPath, emotion + '.txt')
             for file in files:
-                if file[6] == 'S' or file[0] == 's' or file[0] == 'S':
                     imagePath = os.path.join(root, file)  # image absolute path
                     histogram = methods.Lbp(imagePath).histogramVector
+                    print(file)
+                    if len(histogram) == 0:
+                        print("length of vector is 0, probably no face detected in this image:  ", file)
+                        continue
+                    with open(vectorFilePath, 'a') as f:
+                        np.savetxt(f, [histogram], fmt='%.5f', delimiter=',')
+                        print(file, " vector saved in ", vectorFilePath)
+
+    # -> void: read image and generate LBP histogram as eigenvector, then save it in the self.targetPath under format .txt
+    def readLtp2write(self):
+        for root, dirlist, files in os.walk(self.database):
+            emotion = os.path.basename(root)  # name of directory, which is emotion
+            vectorFilePath = os.path.join(self.targetPath, emotion + '.txt')
+            for file in files:
+                    imagePath = os.path.join(root, file)  # image absolute path
+                    histogram = methods.Ltp(imagePath).histogramVector
                     print(file)
                     if len(histogram) == 0:
                         print("length of vector is 0, probably no face detected in this image:  ", file)
