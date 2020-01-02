@@ -6,12 +6,12 @@ import characterize.svmModel as svmModel
 import time
 import pickle
 
-
-path = os.path.dirname(os.path.abspath(__file__))
-path1 = os.path.join(path, 'lbpPcaModels_PcaDict/PcaDict.pickle')
-path2 = os.path.join(path, 'lbpPcaModels_PcaSelectVec/PcaSelectVec.pickle')
-
 #
+# path = os.path.dirname(os.path.abspath(__file__))
+# path1 = os.path.join(path, 'lbpPcaModels_PcaDict/PcaDict.pickle')
+# path2 = os.path.join(path, 'lbpPcaModels_PcaSelectVec/PcaSelectVec.pickle')
+#
+# #
 # dit1={}
 # dit2={}
 
@@ -48,8 +48,12 @@ path2 = os.path.join(path, 'lbpPcaModels_PcaSelectVec/PcaSelectVec.pickle')
 
 
 
-vec_gen = eigenvector.Generator(databasePath='database', targetDirName='hogVectors')
-vec_gen.readHog2write()
+vec_gen = eigenvector.Generator(databasePath='base/train/', targetDirName='hog_ltpVectors')
+vec_gen.readHog_Ltp2write()
+
+
+svmTrainer = svmModel.SvmTrainer(eigenvectorsPath='hog_ltpVectors', targetModelPath='hog_ltpModel')
+svmTrainer.read2Train()
 
 
 print('hh')
