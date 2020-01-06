@@ -1,7 +1,7 @@
 .idea\*
 .idea/*
 __pycache__
-database
+database.zip
 lbpModels
 lbpVectors
 ltpVectors
@@ -9,3 +9,6 @@ lbpPcaModels
 lbpPcaModels_PcaDict
 hogModels
 characterize
+tt.py
+test.py
+*.pyc
