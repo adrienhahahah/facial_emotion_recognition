@@ -4,6 +4,7 @@ import os
 import pickle
 import progressbar
 from characterize import methods
+import copy
 
 
 class SvmTrainer:
@@ -82,13 +83,15 @@ class SVMClassifier:
         currentDir = os.path.dirname(os.path.abspath(__name__))
         self.svmModelsPath = os.path.join(currentDir, svmModelsPath)
 
-    # we need to reset the dictionary every time we execute the lbp_Predict()
+    # we need to reset the dictionary every time the instance execute the lbp_Predict()
     def reset_emotionsDict(self):
         for key in self.__emotionsDict.keys():
             self.__emotionsDict[key] = 0
 
+    # using LBP models to predict, instance must be initialized with the path to lbpModels
     # @param imagePath: predict the emotion of the given imagePath
     # -> emotionPrediction: a str which indicates the emotion of the picture
+    # -> emotionPredictionDict: a dictionary which indicates the prediction of the picture
     def lbp_Predict(self, imagePath, meanPcaDictPath=None, selectVecDictPath=None, display=True):
         currentDir = os.path.dirname(os.path.abspath(__name__))
         imageAbsPath = os.path.join(currentDir, imagePath)
@@ -128,9 +131,13 @@ class SVMClassifier:
             print(imagePath)
             print(self.__emotionsDict)
             print(emotionPrediction)
+        emotionPredictionDict = copy.deepcopy(self.__emotionsDict)
         self.reset_emotionsDict()
-        return emotionPrediction
+        return emotionPredictionDict, emotionPrediction
 
+    # @param testImageBase: path to the database of test, the database directory must be well classified
+    #       example: testImageBase = 'base/test',  the images in the directory 'test' should be test/anger/anger01.jpg, test/sadness/sad002.jpg ....
+    # -> precisionDict: a dictionary with each directory as key which is the marked emotion, and the value is its precision over percentage
     def test_Lbp_precision(self, testImageBase, meanPcaDictPath=None, selectVecDictPath=None, display=False):
         precisionDict = {}
         currentDir = os.path.dirname(os.path.abspath(__name__))
@@ -146,7 +153,7 @@ class SVMClassifier:
             correctCount = 0
             for file in files:
                 testImageAbsPath = os.path.join(root, file)
-                emotionPrediction = self.lbp_Predict(testImageAbsPath, meanPcaDictPath, selectVecDictPath, display)
+                _, emotionPrediction = self.lbp_Predict(testImageAbsPath, meanPcaDictPath, selectVecDictPath, display)
                 emotionLabel = os.path.basename(root)
                 fileCount += 1
                 if emotionPrediction == emotionLabel:
@@ -159,6 +166,10 @@ class SVMClassifier:
         p.finish()
         return precisionDict
 
+    # using LTP models to predict, instance must be initialized with the path to ltpModels
+    # @param imagePath: predict the emotion of the given imagePath
+    # -> emotionPrediction: a str which indicates the emotion of the picture
+    # -> emotionPredictionDict: a dictionary which indicates the prediction of the picture
     def ltp_Predict(self, imagePath, meanPcaDictPath=None, selectVecDictPath=None, display=True):
         currentDir = os.path.dirname(os.path.abspath(__name__))
         imageAbsPath = os.path.join(currentDir, imagePath)
@@ -198,11 +209,13 @@ class SVMClassifier:
             print(imagePath)
             print(self.__emotionsDict)
             print(emotionPrediction)
+        emotionPredictionDict = copy.deepcopy(self.__emotionsDict)
         self.reset_emotionsDict()
-        return emotionPrediction
+        return emotionPredictionDict, emotionPrediction
 
-
-
+    # @param testImageBase: path to the database of test, the database directory must be well classified
+    #       example: testImageBase = 'base/test',  the images in the directory 'test' should be test/anger/anger01.jpg, test/sadness/sad002.jpg ....
+    # -> precisionDict: a dictionary with each directory as key which is the marked emotion, and the value is its precision over percentage
     def test_Ltp_precision(self, testImageBase, meanPcaDictPath=None, selectVecDictPath=None, display=False):
         precisionDict = {}
         currentDir = os.path.dirname(os.path.abspath(__name__))
@@ -218,7 +231,7 @@ class SVMClassifier:
             correctCount = 0
             for file in files:
                 testImageAbsPath = os.path.join(root, file)
-                emotionPrediction = self.ltp_Predict(testImageAbsPath, meanPcaDictPath, selectVecDictPath, display)
+                _, emotionPrediction = self.ltp_Predict(testImageAbsPath, meanPcaDictPath, selectVecDictPath, display)
                 emotionLabel = os.path.basename(root)
                 fileCount += 1
                 if emotionPrediction == emotionLabel:
@@ -231,7 +244,10 @@ class SVMClassifier:
         p.finish()
         return precisionDict
 
-
+    # using HOG models to predict, instance must be initialized with the path to hogModels
+    # @param imagePath: predict the emotion of the given imagePath
+    # -> emotionPrediction: a str which indicates the emotion of the picture
+    # -> emotionPredictionDict: a dictionary which indicates the prediction of the picture
     def hog_Predict(self, imagePath, meanPcaDictPath=None, selectVecDictPath=None, display=True):
         currentDir = os.path.dirname(os.path.abspath(__name__))
         imageAbsPath = os.path.join(currentDir, imagePath)
@@ -271,10 +287,13 @@ class SVMClassifier:
             print(imagePath)
             print(self.__emotionsDict)
             print(emotionPrediction)
+        emotionPredictionDict = copy.deepcopy(self.__emotionsDict)
         self.reset_emotionsDict()
-        return emotionPrediction
+        return emotionPredictionDict, emotionPrediction
 
-
+    # @param testImageBase: path to the database of test, the database directory must be well classified
+    #       example: testImageBase = 'base/test',  the images in the directory 'test' should be test/anger/anger01.jpg, test/sadness/sad002.jpg ....
+    # -> precisionDict: a dictionary with each directory as key which is the marked emotion, and the value is its precision over percentage
     def test_Hog_precision(self, testImageBase, meanPcaDictPath=None, selectVecDictPath=None, display=False):
         precisionDict = {}
         currentDir = os.path.dirname(os.path.abspath(__name__))
@@ -290,7 +309,7 @@ class SVMClassifier:
             correctCount = 0
             for file in files:
                 testImageAbsPath = os.path.join(root, file)
-                emotionPrediction = self.hog_Predict(testImageAbsPath, meanPcaDictPath, selectVecDictPath, display)
+                _, emotionPrediction = self.hog_Predict(testImageAbsPath, meanPcaDictPath, selectVecDictPath, display)
                 emotionLabel = os.path.basename(root)
                 fileCount += 1
                 if emotionPrediction == emotionLabel:
@@ -303,6 +322,10 @@ class SVMClassifier:
         p.finish()
         return precisionDict
 
+    # using HOG and LTP models to predict, instance must be initialized with the path to hog_ltpModels
+    # @param imagePath: predict the emotion of the given imagePath
+    # -> emotionPrediction: a str which indicates the emotion of the picture
+    # -> emotionPredictionDict: a dictionary which indicates the prediction of the picture
     def hog_ltp_Predict(self, imagePath, meanPcaDictPath=None, selectVecDictPath=None, display=True):
         currentDir = os.path.dirname(os.path.abspath(__name__))
         imageAbsPath = os.path.join(currentDir, imagePath)
@@ -331,6 +354,7 @@ class SVMClassifier:
                     selectVec = selectVecDict[file].astype('float32')
                     adjustImageVector = imageVector - meanPca
                     adjustImageVector = adjustImageVector * selectVec
+                print(adjustImageVector.shape)
                 (_, predictVal) = svmModel.predict(adjustImageVector)
                 if predictVal == 1:
                     self.__emotionsDict[emotions[0]] += 1
@@ -344,10 +368,13 @@ class SVMClassifier:
             print(imagePath)
             print(self.__emotionsDict)
             print(emotionPrediction)
+        emotionPredictionDict = copy.deepcopy(self.__emotionsDict)
         self.reset_emotionsDict()
-        return emotionPrediction
+        return emotionPredictionDict, emotionPrediction
 
-
+    # @param testImageBase: path to the database of test, the database directory must be well classified
+    #       example: testImageBase = 'base/test',  the images in the directory 'test' should be test/anger/anger01.jpg, test/sadness/sad002.jpg ....
+    # -> precisionDict: a dictionary with each directory as key which is the marked emotion, and the value is its precision over percentage
     def test_Hog_Ltp_precision(self, testImageBase, meanPcaDictPath=None, selectVecDictPath=None, display=False):
         precisionDict = {}
         currentDir = os.path.dirname(os.path.abspath(__name__))
@@ -363,7 +390,7 @@ class SVMClassifier:
             correctCount = 0
             for file in files:
                 testImageAbsPath = os.path.join(root, file)
-                emotionPrediction = self.hog_ltp_Predict(testImageAbsPath, meanPcaDictPath, selectVecDictPath, display)
+                _, emotionPrediction = self.hog_ltp_Predict(testImageAbsPath, meanPcaDictPath, selectVecDictPath, display)
                 emotionLabel = os.path.basename(root)
                 fileCount += 1
                 if emotionPrediction == emotionLabel:
@@ -377,6 +404,10 @@ class SVMClassifier:
         return precisionDict
 
 
+
+
+# PCA class is for diminish the dimention of eigenvectors, which in our model is not useful
+# this class is currently not used
 class PCA:
     kDimention = 0
     normalizationDict = {}
@@ -398,6 +429,8 @@ class PCA:
     def mean_On_Dimention(self, trainVectors):
         return np.mean(trainVectors, axis=0)
 
+
+    # returns a matrix for transforming the original matrix to a new space reality
     def pca_newR(self, XMat, k):
         average = self.mean_On_Dimention(XMat)
         m, n = np.shape(XMat)
@@ -405,7 +438,7 @@ class PCA:
         avgs = np.tile(average, (m, 1))
         data_adjust = XMat - avgs
         covX = np.cov(data_adjust.T)                                                    # calculate co-variance matrix
-        featValue, featVec = np.linalg.eig(covX)                                      # featVec.shape is (n, n), featValue.shape is (n,)
+        featValue, featVec = np.linalg.eig(covX)                                        # featVec.shape is (n, n), featValue.shape is (n,)
         index = np.argsort(-featValue)                                                  # index.shape is (n,), specifying from big to small index of featvalue
         finalData = []
         if k > n:
