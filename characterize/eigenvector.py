@@ -32,7 +32,7 @@ class Generator:
                         np.savetxt(f, [histogram], fmt='%.5f', delimiter=',')
                         print(file, " vector saved in ", vectorFilePath)
 
-    # -> void: read image and generate LBP histogram as eigenvector, then save it in the self.targetPath under format .txt
+    # -> void: read image and generate LTP histogram as eigenvector, then save it in the self.targetPath under format .txt
     def readLtp2write(self):
         for root, dirlist, files in os.walk(self.database):
             emotion = os.path.basename(root)  # name of directory, which is emotion
@@ -48,6 +48,7 @@ class Generator:
                         np.savetxt(f, [histogram], fmt='%.5f', delimiter=',')
                         print(file, " vector saved in ", vectorFilePath)
 
+    # -> void: read image and generate HOG histogram as eigenvector, then save it in the self.targetPath under format .txt
     def readHog2write(self):
         for root, dirlist, files in os.walk(self.database):
             emotion = os.path.basename(root)  # name of directory, which is emotion
@@ -63,7 +64,7 @@ class Generator:
                     np.savetxt(f, [histogram], fmt='%.5f', delimiter=',')
                     print(file, " vector saved in ", vectorFilePath)
 
-
+    # -> void: read image and generate HOG+LTP histogram as eigenvector, then save it in the self.targetPath under format .txt
     def readHog_Ltp2write(self):
         for root, dirlist, files in os.walk(self.database):
             emotion = os.path.basename(root)  # name of directory, which is emotion
