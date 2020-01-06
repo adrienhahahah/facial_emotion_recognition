@@ -33,7 +33,7 @@ import pickle
 #
 # start = time.time()
 # classifier = svmModel.SVMClassifier(svmModelsPath='lbpModels')             #
-#classifier.lbp_Predict(imagePath='images/anger/an1.jpg', meanPcaDictPath='lbpPcaModels_PcaDict/PcaDict.pickle', selectVecDictPath='lbpPcaModels_PcaSelectVec/PcaSelectVec.pickle')
+# classifier.lbp_Predict(imagePath='images/anger/an1.jpg', meanPcaDictPath='lbpPcaModels_PcaDict/PcaDict.pickle', selectVecDictPath='lbpPcaModels_PcaSelectVec/PcaSelectVec.pickle')
 # classifier.lbp_Predict(imagePath='images/ex.jpg')
 
 #precisionDict = classifier.test_Lbp_precision(testImageBase='jaffebase', meanPcaDictPath='lbpPcaModels_PcaDict/PcaDict.pickle', selectVecDictPath='lbpPcaModels_PcaSelectVec/PcaSelectVec.pickle')
